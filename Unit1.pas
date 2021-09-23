@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls;
 
 type
   TConjunto = Record
@@ -31,11 +31,14 @@ type
   End;
 
   TForm1 = class(TForm)
+    Memo1: TMemo;
+    Panel1: TPanel;
     Button1: TButton;
     Edit1: TEdit;
     Edit2: TEdit;
     Button2: TButton;
-    Memo1: TMemo;
+    Label1: TLabel;
+    Label2: TLabel;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
   private
@@ -61,6 +64,9 @@ begin
 
   if NumeroPositivo(Number1) or NumeroPositivo(Number2) then
     raise TExcecao.Create('O número não pode ser negativo.');
+
+  if felementos = Count then
+    raise TExcecao.Create('Não é possíveu inserir mais nenhuma elemento, pois já excedeu o limite.');
 
   if not WalkConnections(Number1, Number2) then
   Begin
@@ -90,6 +96,8 @@ end;
 
 function TNetwork.Query(Number1, Number2:integer): Boolean;
 begin
+  if Count = 0 then
+    raise TExcecao.Create('Não existe nenhum vínculo armazenado');
   Result := (NumerosLigados(Number1, Number2) or NumerosLigadosIndiretamente(Number1, Number2));
 end;
 
@@ -151,6 +159,19 @@ End;
 
 procedure TForm1.Button1Click(Sender: TObject);
 begin
+  if Length(Edit1.Text)=0 then
+  Begin
+    Edit1.SetFocus;
+    ShowMessage('Favor informar o primeiro número');
+    Exit;
+  End;
+  if Length(Edit2.Text)=0 then
+  Begin
+    Edit2.SetFocus;
+    ShowMessage('Favor informar o segundo número');
+    Exit;
+  End;
+
   if not Assigned(Network) then
     Network := TNetwork.Create(8);
 
@@ -165,6 +186,22 @@ end;
 
 procedure TForm1.Button2Click(Sender: TObject);
 begin
+  if Length(Edit1.Text)=0 then
+  Begin
+    Edit1.SetFocus;
+    ShowMessage('Favor informar o primeiro número');
+    Exit;
+  End;
+  if Length(Edit2.Text)=0 then
+  Begin
+    Edit2.SetFocus;
+    ShowMessage('Favor informar o segundo número');
+    Exit;
+  End;
+
+  if not Assigned(Network) then
+    Network := TNetwork.Create(8);
+
   if Network.Query(StrToInt(Edit1.Text), StrToInt(Edit2.Text)) then
     ShowMessage('Números ligados direta ou indiretamente')
   else
